@@ -6,6 +6,7 @@ Promise = require 'bluebird'
 
 class Generator
   constructor: (opts = {}) ->
+    fs.writeFile('../../../client/app/lib/integration-tests/tests/index.coffee', 'module.exports = {\n')
 
   @getRainforestTests: () ->
     files = fs.readdirSync './'
@@ -22,13 +23,21 @@ class Generator
 
     @header = lines[0];
     @title = lines[0].split('\n')[0].split(' ')[1]
-    @requires = lines[1].split(' ')[1]
 
-    # Delete first 2 for generation
-    lines.shift()
-    lines.shift()
 
-    # Remove #redirect false
+    # remove require line if it is exists
+    if lines[1].indexOf('-') is 0
+      @requires = lines[1].split(' ')[1]
+      delete lines[1]
+    else
+      @requires = null
+
+
+    # remove # redirect false
+    if lines[2].indexOf('redirect') > 0
+      delete lines[2]
+
+    # Remove # redirect: false
     if lines[0][0] is '#'
       lines[0] = lines[0].substr lines[0].indexOf('\n') + 1, lines[0].length
 
@@ -38,7 +47,7 @@ class Generator
     exists = no
 
     try
-      stats = fs.lstatSync "./#{filename}"
+      stats = fs.lstatSync "../../../client/app/lib/integration-tests/tests/#{filename}"
       exists = stats.isFile()
     catch
       console.info "#{filename} doesnt exist at all. Proceeding..."
@@ -49,27 +58,33 @@ class Generator
 
   generateMochaTest: () ->
     replacedChar = new RegExp "'", "g"
-    mocha = @header + "\n\n"
+    mocha = "$ = require 'jquery'\n"
+    mocha + "assert = assert\n\n"
+    mocha += @header + "\n\n"
     requires = @requiredFileName
 
     filename = @filename
 
+
     @parsedBody.forEach (test, index) ->
       if index is 0
         mocha += 'describe "' + filename + '", ->\n'
-        mocha += "  before -> \n"
-        mocha += "    require './#{requires}'\n\n"
+        mocha += "  before -> \n"  if requires
+        mocha += "    require './#{requires}'\n\n"  if requires
         return
 
       should = test.split('\n')[0]
-      mocha += '  describe "' + should + '", ->\n'
+      mocha += '  describe """' + should + '""", ->\n'
+      mocha += "    before -> \n"
+      mocha += "      assert(false, 'Not Implemented')"
+      mocha += '      # implement before hook \n'
 
-      assertions = test.split('\n')[1].split('? ')
+      assertions = test.split('\n')[1]?.split('? ')
 
-      assertions.forEach (assertion, index, array) ->
+      assertions?.forEach (assertion, index, array) ->
         if assertion.length > 1
           mocha += '    it "' + assertion + '?", -> \n'
-          mocha += "      console.warning 'Not yet implemented.'\n\n"
+          mocha += "      console.warning 'Not yet implemented.'\n      #assertion here\n\n"
 
         mocha += "\n" if index is (array.length - 1)
 
@@ -77,16 +92,23 @@ class Generator
 
   getRequiredModule: (mapping) ->
     @mapping = mapping
-    @requiredFileName = mapping[@requires].name
+
+    if @requires
+      @requiredFileName = mapping[@requires].name
+    else
+      @requiredFileName = null
 
   save: () ->
-    file = @filename.split('.')[0] + '.coffee'
-    fs.writeFile("./#{file}", @mocha)
+    base = @filename.split('.')[0]
+    file = base + '.coffee'
+    fs.writeFile("../../../client/app/lib/integration-tests/tests/#{file}", @mocha)
+    fs.appendFile('../../../client/app/lib/integration-tests/tests/index.coffee', "\t#{base}: require './#{file}'\n" )
+
 
   isTestsValid: () ->
     coffeefilename = @filename.split('.')[0] + '.coffee'
     console.info "Checking is file is valid for #{coffeefilename}..."
-    coffeeFile = fs.readFileSync "./#{coffeefilename}", 'utf-8'
+    coffeeFile = fs.readFileSync "../../../client/app/lib/integration-tests/tests/#{coffeefilename}", 'utf-8'
     testCount = @mapping[@title].testCount
 
     validTests = coffeeFile.match(/describe/g).length + 1;
@@ -120,8 +142,13 @@ class Generator
   @getMapping: () ->
     JSON.parse fs.readFileSync './mapping.json', 'utf-8'
 
+  @closeIndexFile: () ->
+    fs.appendFile('../../../client/app/lib/integration-tests/tests/index.coffee', "}\n" )
+
+
 
 mapping = Generator.getMapping()
+
 files = Generator.getRainforestTests()
 
 generator = new Generator()
@@ -136,3 +163,5 @@ files.forEach (file) ->
     generator.save()
   else
     generator.isTestsValid()
+
+Generator.closeIndexFile()
