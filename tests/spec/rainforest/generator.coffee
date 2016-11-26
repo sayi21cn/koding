@@ -59,7 +59,7 @@ class Generator
   generateMochaTest: () ->
     replacedChar = new RegExp "'", "g"
     mocha = "$ = require 'jquery'\n"
-    mocha += "assert = assert\n\n"
+    mocha += "assert = require 'assert'\n\n"
     mocha += @header + "\n\n"
     requires = @requiredFileName
 
@@ -82,9 +82,9 @@ class Generator
 
       assertions?.forEach (assertion, index, array) ->
         if assertion.length > 1
-          mocha += '    it """' + assertion + '?""", (done) -> \n'
-          mocha += "      assert(false, 'Not Implemented')\n      #assertion here\n"
-          mocha += "      done()\n\n"
+          mocha += '    it """' + assertion + '?""", -> \n'
+          mocha += "      assert(false, 'Not Implemented')\n      #assertion here\n\n"
+          # mocha += "      \n"
 
         mocha += "\n" if index is (array.length - 1)
 
