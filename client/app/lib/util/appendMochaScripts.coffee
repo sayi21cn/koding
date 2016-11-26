@@ -11,11 +11,7 @@ module.exports.appendScripts = ->
     identifier: 'mocha-clean'
     url: 'https://cdn.rawgit.com/rstacruz/mocha-clean/v0.4.0/index.js'
 
-  shouldOptions =
-    identifier: 'should'
-    url: 'https://cdnjs.cloudflare.com/ajax/libs/should.js/11.1.1/should.min.js'
 
   new Promise (resolve, reject) ->
     addToHead 'script', mochaOptions, ->
-      addToHead 'script', shouldOptions, ->
-        addToHead 'script', mochaCleanOptions, resolve
+      addToHead 'script', mochaCleanOptions, resolve
