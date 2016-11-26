@@ -35,6 +35,8 @@ class ModalView extends ReactView
 
   renderReact: ->
     <Dialog
+      width='xlarge'
+      height='taller'
       isOpen={@options.isOpen}
       showAlien={@options.alien}
       type={@options.type}
