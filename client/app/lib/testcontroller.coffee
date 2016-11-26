@@ -1,0 +1,118 @@
+kd = require 'kd'
+KDController = kd.Controller
+Helper = require './util/appendMochaScripts'
+ModalView = require 'app/integration-tests/modal'
+OutputModal = require 'app/integration-tests/output'
+Modal = require 'lab/Modal'
+
+
+status =
+  STARTED: 'started'
+  RUNNING: 'running'
+  PASSED: 'passed'
+  FAILED: 'failed'
+
+
+class IntegrationTestManager extends KDController
+  constructor: ->
+    super
+    console.info 'Integration test initialized.'
+
+
+  start: ->
+    @emit 'status', status.STARTED
+
+    Helper
+      .appendScripts()
+      .then =>
+        @_run()
+
+
+  # Bind to mocha test suite events, and emit when necessary.
+  bindEvents: (runner) ->
+    console.log 'runner >>', runner, runner.started
+
+    runner.on 'end', =>
+      console.log 'Ended with', runner.currentRunnable.state
+      console.log 'status', runner.stats
+      @emit 'status', runner.currentRunnable.state
+
+
+    runner.on 'fail', (res) =>
+      console.log 'res ', res
+
+      { title, parent : _parent  } = res
+      { message: status } = res.err
+      { reactor } = kd.singletons
+
+      reactor.dispatch 'TEST_SUITE_FAIL', { title, status, parentTitle: @getParentTitle _parent}
+
+
+  getParentTitle: (parent) ->
+
+    return null if parent.title is ''
+    while parent.parent.title isnt ''
+      parent = parent.parent
+
+    return parent.title
+
+
+  # Setups mocha and add necessary tests.
+  _run: () ->
+    mocha.setup
+      ui: 'bdd'
+      timeout: 2000
+
+    mocha.traceIgnores = [
+      'https://cdnjs.cloudflare.com/ajax/libs/mocha/3.1.2/mocha.min.js'
+    ]
+
+    require './integration-tests/tests'
+
+    @emit 'status', status.RUNNING
+
+    runner = mocha.run()
+
+    @bindEvents runner
+
+
+  showResults: ->
+
+    modal = new ModalView
+      title: 'IDE Browser tests'
+      type: 'success'
+      message: 'Run IDE by clicking the button below. To start over please
+                refresh your browser on this page.'
+      buttonTitle: 'Run'
+
+
+  prepareModal: ->
+
+    require 'app/integration-tests/style.css'
+
+    @modal = new OutputModal
+      title: 'Testing Koding'
+      isOpen: yes
+
+    @on 'status', (status) =>
+      @modal.updateOptions
+        title : "Testing Koding: #{status}"
+        isOpen : yes
+
+    @start()
+
+
+  prepare: ->
+
+    @browserModal = new ModalView
+      title: 'IDE Browser tests'
+      type: 'success'
+      message: 'Run IDE by clicking the button below. To start over please
+                refresh your browser on this page.'
+      buttonTitle: 'Run'
+      onButtonClick: =>
+        @browserModal.destroy()
+        @prepareModal()
+
+
+module.exports = IntegrationTestManager
