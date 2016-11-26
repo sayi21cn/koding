@@ -59,7 +59,7 @@ class Generator
   generateMochaTest: () ->
     replacedChar = new RegExp "'", "g"
     mocha = "$ = require 'jquery'\n"
-    mocha + "assert = assert\n\n"
+    mocha += "assert = assert\n\n"
     mocha += @header + "\n\n"
     requires = @requiredFileName
 
@@ -76,15 +76,15 @@ class Generator
       should = test.split('\n')[0]
       mocha += '  describe """' + should + '""", ->\n'
       mocha += "    before -> \n"
-      mocha += "      assert(false, 'Not Implemented')"
-      mocha += '      # implement before hook \n'
+      mocha += '      # implement before hook \n\n'
 
       assertions = test.split('\n')[1]?.split('? ')
 
       assertions?.forEach (assertion, index, array) ->
         if assertion.length > 1
-          mocha += '    it "' + assertion + '?", -> \n'
-          mocha += "      console.warning 'Not yet implemented.'\n      #assertion here\n\n"
+          mocha += '    it """' + assertion + '?""", (done) -> \n'
+          mocha += "      assert(false, 'Not Implemented')\n      #assertion here\n"
+          mocha += "      done()\n\n"
 
         mocha += "\n" if index is (array.length - 1)
 
@@ -102,7 +102,7 @@ class Generator
     base = @filename.split('.')[0]
     file = base + '.coffee'
     fs.writeFile("../../../client/app/lib/integration-tests/tests/#{file}", @mocha)
-    fs.appendFile('../../../client/app/lib/integration-tests/tests/index.coffee', "\t#{base}: require './#{file}'\n" )
+    fs.appendFile('../../../client/app/lib/integration-tests/tests/index.coffee', "\t#{base}: require './#{base}'\n" )
 
 
   isTestsValid: () ->
@@ -147,7 +147,7 @@ class Generator
 
 
 
-mapping = Generator.getMapping()
+mapping = Generator.createMapping()
 
 files = Generator.getRainforestTests()
 
