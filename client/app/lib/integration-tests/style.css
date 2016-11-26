@@ -10,6 +10,7 @@
 }
 
 #mocha-stats a, #mocha-report h1 {
+  font-size: 18px;
   pointer-events: none;
   cursor: default;
   color:inherit;
@@ -60,7 +61,7 @@
 }
 
 #mocha-report .suite {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 #mocha-report h1 a {
@@ -158,14 +159,5 @@
 }
 .suite-results .suite .suite-info-wrapper span.hti{
   color: #CA4A18;
-}.
-
-.suite-results .suite .suite-info-wrapper .title {
-
 }
-
-.suite-results .suite .suite-info-wrapper .status > span{
-
-}
-
 

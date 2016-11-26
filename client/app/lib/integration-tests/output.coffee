@@ -20,7 +20,6 @@ class TestOutputModal extends ReactView
     </span>
 
   showTable: (event) ->
-    console.log 'onClick', event
     @updateOptions { showTable: not @options.showTable }
 
   renderReact: ->

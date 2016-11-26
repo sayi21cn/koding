@@ -30,20 +30,17 @@ class IntegrationTestManager extends KDController
 
   # Bind to mocha test suite events, and emit when necessary.
   bindEvents: (runner) ->
-    console.log 'runner >>', runner, runner.started
 
     runner.on 'end', =>
-      console.log 'Ended with', runner.currentRunnable.state
-      console.log 'status', runner.stats
       @emit 'status', runner.currentRunnable.state
 
 
     runner.on 'fail', (res) =>
-      console.log 'res ', res
-
+      console.log res
       { title, parent : _parent  } = res
       { message: status } = res.err
       { reactor } = kd.singletons
+      title = "before hook of #{_parent.title}"  if title is '"before all" hook'
 
       reactor.dispatch 'TEST_SUITE_FAIL', { title, status, parentTitle: @getParentTitle _parent}
 
