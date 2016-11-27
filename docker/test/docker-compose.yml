@@ -1,0 +1,55 @@
+version: '2'
+
+services:
+
+  backend:
+    image: koding/base
+    working_dir: /opt/koding
+    entrypoint: scripts/bootstrap-container
+    command: run backend
+    env_file:
+      - ../../.env-docker-compose
+      - environment
+    volumes:
+      - ../../:/opt/koding
+    ports:
+      - 80:80
+    links:
+      - mongo
+      - postgres
+      - rabbitmq
+      - redis
+
+  client:
+    image: koding/base
+    working_dir: /opt/koding
+    entrypoint: scripts/bootstrap-container is_ready
+    command: make -C client development
+    env_file:
+      - ../../.env-docker-compose
+      - environment
+    volumes:
+      - ../../:/opt/koding
+
+  client-landing:
+    image: koding/base
+    working_dir: /opt/koding
+    entrypoint: scripts/bootstrap-container is_ready
+    command: make -C client/landing dev
+    env_file:
+      - ../../.env-docker-compose
+      - environment
+    volumes:
+      - ../../:/opt/koding
+
+  mongo:
+    image: koding/mongo
+
+  postgres:
+    image: koding/postgres
+
+  rabbitmq:
+    image: rabbitmq:3-management
+
+  redis:
+    image: redis
