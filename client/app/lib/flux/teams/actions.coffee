@@ -277,7 +277,14 @@ handlePermanentlyDeleteMember = (member) ->
 leaveTeam = (partial) ->
 
   new Promise (resolve, reject) ->
-    new VerifyPasswordModal 'Confirm', partial, (currentPassword) ->
+
+    modalOptions = {
+      partial,
+      width: 640,
+      title: 'Leave Team'
+    }
+
+    @modal = new VerifyPasswordModal 'Leave Team', modalOptions, (currentPassword) ->
 
       whoami().fetchEmail (err, email) ->
         options = { password: currentPassword, email }
@@ -298,7 +305,6 @@ leaveTeam = (partial) ->
             Tracker.track Tracker.USER_LEFT_TEAM
             kookies.expire 'clientId'
             global.location.replace '/'
-
 
 fetchApiTokens = ->
 

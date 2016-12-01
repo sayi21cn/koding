@@ -1,7 +1,7 @@
 kd = require 'kd'
 React = require 'app/react'
 ScrollableContent = require 'app/components/scroller'
-
+SearchInputBox = require 'lab/SearchInputBox'
 
 module.exports = class StackScriptSearchBoxView extends React.Component
 
@@ -60,20 +60,6 @@ module.exports = class StackScriptSearchBoxView extends React.Component
       {@renderIcon()}
       {@renderResults()}
     </div>
-
-
-SearchInputBox = ({ value, onChangeCallback, onFocusCallback, onKeyUp, active }) ->
-
-  <input
-    type='text'
-    className="kdinput text searchStackInput#{if active then ' active' else ''}"
-    placeholder='Search Docs, AWS, S3, Azure, GCP...'
-    value={value}
-    onChange={onChangeCallback}
-    onKeyUp={onKeyUp}
-    onClick={onFocusCallback}
-    onFocus={onFocusCallback} />
-
 
 List = ({ item, callback }) ->
 

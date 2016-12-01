@@ -5,6 +5,8 @@ KDReactorMixin  = require 'app/flux/base/reactormixin'
 View            = require './view'
 Encoder         = require 'htmlencode'
 showError       = require 'app/util/showError'
+ContentModal    = require 'app/components/contentModal'
+globals         = require 'globals'
 
 notify = (title, duration = 5000) -> new kd.NotificationView { title, duration }
 
@@ -100,16 +102,38 @@ module.exports = class HomeTeamSettingsContainer extends React.Component
 
 
   onLeaveTeam: (event) ->
+    textIfOwner = if _globals.userRoles.indexOf('owner') != -1 then " We will transfer the ownership of these resources to team owner." else ""
 
-    partial = '<p>
-                <strong>CAUTION! </strong>You are going to leave your team and you will not be able to login again.
-                This action <strong>CANNOT</strong> be undone.
-              </p> <br>
-              <p>Please enter <strong>current password</strong> into the field below to continue: </p>'
+    surePartial = "<div class='image'></div>
+      <div class='caption'>
+        <h2>You are about to leave the team Teamname.</h2>
+        <p>Leaving this team will remove your access to your <strong>3 public stacks</strong>." + textIfOwner + " You can download these resources below to reuse them.</p>
+        <a class='download-icon' href='#'>Download Stacks & Credentials</a>
+      </div>
+      <div class='clearfix'></div>"
 
-    TeamFlux.actions.leaveTeam(partial).catch (err) ->
-      showError err
+    modal = new ContentModal
+      width         : 639
+      cssClass      : 'content-modal leave-team'
+      title         : 'Are You Sure?'
+      content       : surePartial
+      overlay       : yes
+      buttons       :
+        'DontSave'  :
+          cssClass  : 'solid cancel medium no-text-transform'
+          title     : "Cancel"
+          callback  : =>
+            modal.destroy()
+        'SaveClose' :
+          cssClass  : 'solid medium no-text-transform'
+          title     : 'Yes, Continue'
+          callback  : =>
+            modal.destroy()
 
+            partial = '<div class="warning-prompt">You will not be able to access this team unless you are invited again. This action <span>cannot</span> be undone.</div>'
+
+            TeamFlux.actions.leaveTeam(partial).catch (err) ->
+              showError err
 
   render: ->
 

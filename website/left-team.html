@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>You have now left</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+<style>
+  body {
+    font-family: 'Proxima Nova', 'proxima-nova', Helvetica, Arial;
+    text-align: center;
+    color: #ffffff;
+  }
+
+  #container {
+    width: 511px;
+    position: relative;
+    margin: 270px auto 0;
+  }
+
+  .together {
+    margin-left: 16px;
+    margin-bottom: 15px;
+  }
+
+  .drifting {
+    position: absolute;
+    top: 80px;
+    right: 83px;
+    top: -3px;
+    right: -307px;
+    width: 19px;
+    opacity: 0;
+
+    animation-name: driftAway;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 4.5s;
+  }
+
+  .teammate1 {
+    position: absolute;
+    top: 86px;
+    left: 175px;
+    animation: hoverAround 15s infinite ease;
+  }
+
+  .teammate2 {
+    position: absolute;
+    top: 114px;
+    left: 280px;
+    animation: hoverAround 13s infinite ease;
+    animation-delay: 1s;
+  }
+
+  @keyframes driftAway {
+      0% {
+          transform: scale(3) translate(-120px, 28px);
+          opacity: 1;
+      }
+      100% {
+          transform: translate(0, 0, 0);
+          opacity: 0;
+      }
+  }
+
+  @keyframes hoverAround {
+    25%, 75% {
+      transform: translate(0, 10px);
+    }
+
+    0%, 50%, 100% {
+      transform: translate(0, 0);
+    }
+  }
+
+  h2 {
+    font-weight: 400;
+    font-size: 38px;
+    margin-bottom: 12px;
+  }
+
+  p {
+    margin-bottom: 40px;
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 21px;
+  }
+
+  a {
+    display: inline-block;
+    margin: 0 auto;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    padding: 10px 30px;
+    color: #F2778A;
+    text-decoration: none;
+  }
+
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background-color: #121212;
+  }
+</style>
+
+</head>
+<body id="particles">
+  <div id="container">
+    <img class="together" src="/a/images/codetogether.png" />
+    <img class="drifting" src="/a/images/driftingastronaut.png" />
+    <img class="teammate1" src="/a/images/teammate1.png" />
+    <img class="teammate2" src="/a/images/teammate2.png" />
+    <h2>You have now left TeamX</h2>
+    <p>We have transferred all your public resources to <strong>Mark Gordon</strong>. If you have another team, please sign in on the next screen, or you can create a new team.</p>
+    <a href="/Teams/Select">
+      Close
+    </a>
+  </div>
+
+  <script>
+  particlesJS("particles", {
+    "particles": {
+      "number": {
+        "value": 150,
+        "density": {
+          "enable": true,
+          "value_area": 800
+        }
+      },
+      "color": {
+        "value": "#8BA9D1"
+      },
+      "shape": {
+        "type": "circle",
+        "stroke": {
+          "width": 0,
+          "color": "#000000"
+        }
+      },
+      "opacity": {
+        "value": 1,
+        "random": true,
+        "anim": {
+          "enable": true,
+          "speed": 1,
+          "opacity_min": 0.2,
+          "sync": false
+        }
+      },
+      "size": {
+        "value": 1,
+        "random": false,
+        "anim": {
+          "enable": false
+        }
+      },
+      "line_linked": {
+        "enable": false
+      },
+      "move": {
+        "enable": true,
+        "speed": 1,
+        "direction": "none",
+        "random": true,
+        "straight": false,
+        "out_mode": "out",
+        "bounce": false,
+        "attract": {
+          "enable": false,
+          "rotateX": 600,
+          "rotateY": 600
+        }
+      }
+    },
+    "interactivity": {
+      "events": {
+        "onhover": {
+          "enable": false,
+        },
+        "onclick": {
+          "enable": false,
+        },
+        "resize": false
+      }
+    },
+    "retina_detect": true
+  });
+
+  setTimeout(function() {
+    window.location = '/Teams/Select';
+  }, 10000)
+  </script>
+</body>
+</html>

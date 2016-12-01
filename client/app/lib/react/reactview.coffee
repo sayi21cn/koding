@@ -7,7 +7,6 @@ module.exports = class ReactView extends kd.CustomHTMLView
   constructor: (options = {}, data) ->
 
     super options, data
-
     @on 'KDObjectWillBeDestroyed', =>
       ReactDOM.unmountComponentAtNode @getElement()
 
