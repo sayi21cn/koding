@@ -329,22 +329,47 @@ contentModal.styl
 
   &.content-modal.with-partial.kdmodal
 
+    main
+      margin                31px 40px 30px
+
     strong
-      font-weight             600
+      font-weight           600
+      color                 inherit
+
+    p
+      margin-bottom         14px
+      line-height           20px
+
+    input
+      padding-bottom        8px
+      margin-bottom         9px
+
+      &.autocomplete
+        margin-top          20px
+
+    a
+      font-weight           300
+      font-size             14px
+
+    hr
+      border                0
+      border-top            1px solid #ECEAEA
+      margin-top            21px
+      margin-bottom         26px
 
     .kdmodal-content header
-      border-bottom           0
+      border-bottom         0
 
     .warning-prompt
-      background-color    #FFF9FA
-      color               #F2778A
-      border-top          1px solid #FCD8DE
-      border-bottom       1px solid #FCD8DE
-      font-size           13px
-      padding             18px 50px 18px 81px
-      line-height         20px
-      letter-spacing      .04em
-      position            relative
+      background-color      #FFF9FA
+      color                 #F2778A
+      border-top            1px solid #FCD8DE
+      border-bottom         1px solid #FCD8DE
+      font-size             13px
+      padding               18px 50px 20px 81px
+      line-height           20px
+      letter-spacing        .04em
+      position              relative
 
       &:before
         content           ""

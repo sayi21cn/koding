@@ -2,12 +2,12 @@ React = require 'react'
 
 module.exports = SearchInputBox = (props) ->
 
-  { value, onChangeCallback, onFocusCallback, onKeyUp, active } = props
+  { value, onChangeCallback, onFocusCallback, onKeyUp, active, placeholder } = props
 
   <input
     type='text'
     className="kdinput text searchStackInput#{if active then ' active' else ''}"
-    placeholder='Search Docs, AWS, S3, Azure, GCP...'
+    placeholder={placeholder}
     value={value}
     onChange={onChangeCallback}
     onKeyUp={onKeyUp}

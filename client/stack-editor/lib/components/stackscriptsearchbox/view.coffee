@@ -55,7 +55,8 @@ module.exports = class StackScriptSearchBoxView extends React.Component
         onChangeCallback={@props.onChange}
         onKeyUp={@props.onKeyUp}
         active={not @isIconVisible()}
-        onFocusCallback={@props.onFocus} />
+        onFocusCallback={@props.onFocus}
+        placeholder='Search Docs, AWS, S3, Azure, GCP...' />
       {@renderLink()}
       {@renderIcon()}
       {@renderResults()}
