@@ -13,7 +13,7 @@ isEmailValid = require 'app/util/isEmailValid'
 s3upload = require 'app/util/s3upload'
 kookies = require 'kookies'
 Tracker = require 'app/util/tracker'
-VerifyPasswordModal = require 'app/commonviews/verifypasswordmodal'
+VerifyPasswordModal2 = require 'app/commonviews/verifypasswordmodal2'
 KodingKontrol = require 'app/kite/kodingkontrol'
 globals = require 'globals'
 
@@ -284,27 +284,30 @@ leaveTeam = (partial) ->
       title: 'Leave Team'
     }
 
-    @modal = new VerifyPasswordModal 'Leave Team', modalOptions, (currentPassword) ->
+    modalContainer = new ModalContainer
+    modalContainer.show new VerifyPasswordModal2 { test: 'test'}
+    console.log modalContainer
+    # , modalOptions, (currentPassword) ->
 
-      whoami().fetchEmail (err, email) ->
-        options = { password: currentPassword, email }
-        remote.api.JUser.verifyPassword options, (err, confirmed) ->
+      # whoami().fetchEmail (err, email) ->
+      #   options = { password: currentPassword, email }
+      #   remote.api.JUser.verifyPassword options, (err, confirmed) ->
 
-          return reject err.message  if err
-          return reject 'Current password cannot be confirmed'  unless confirmed
+      #     return reject err.message  if err
+      #     return reject 'Current password cannot be confirmed'  unless confirmed
 
-          resolve confirmed
+      #     resolve confirmed
 
-          { groupsController, reactor } = kd.singletons
-          team = groupsController.getCurrentGroup()
+      #     { groupsController, reactor } = kd.singletons
+      #     team = groupsController.getCurrentGroup()
 
-          team.leave { password: currentPassword }, (err) ->
-            if err
-              return new kd.NotificationView { title : err.message }
+      #     team.leave { password: currentPassword }, (err) ->
+      #       if err
+      #         return new kd.NotificationView { title : err.message }
 
-            Tracker.track Tracker.USER_LEFT_TEAM
-            kookies.expire 'clientId'
-            global.location.replace '/'
+      #       Tracker.track Tracker.USER_LEFT_TEAM
+      #       kookies.expire 'clientId'
+      #       global.location.replace '/'
 
 fetchApiTokens = ->
 
@@ -386,3 +389,15 @@ module.exports = {
   fetchCurrentStateOfApiAccess
   loadOtaToken
 }
+
+class ModalContainer
+  constructor: ->
+    @modal = null
+    @container = new kd.CustomHTMLView
+    @container.appendToDomBody()
+
+
+  show: (modal) ->
+    @modal?.destroy()
+    @modal = modal
+    @container.addSubView @modal  if @modal

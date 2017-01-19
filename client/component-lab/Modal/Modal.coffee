@@ -15,7 +15,7 @@ module.exports = class Modal extends Component
   render: ->
 
     { isOpen, onAfterOpen, onRequestClose, children,
-      shouldCloseOnOverlayClick, width, height, showAlien } = @props
+      shouldCloseOnOverlayClick, width, height, showAlien, contentLabel } = @props
 
     className = classnames [
       styles.modal
@@ -29,7 +29,8 @@ module.exports = class Modal extends Component
       isOpen={isOpen}
       onAfterOpen={onAfterOpen}
       onRequestClose={onRequestClose}
-      shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}>
+      shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
+      contentLabel={contentLabel}>
       <div className={styles.wrapper}>
         {<figure className={styles.alien}/>  if showAlien}
         {children}

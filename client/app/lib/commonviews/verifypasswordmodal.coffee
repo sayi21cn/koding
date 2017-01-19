@@ -4,31 +4,21 @@ KDNotificationView = kd.NotificationView
 whoami = require 'app/util/whoami'
 showError = require 'app/util/showError'
 ContentModal = require 'app/components/contentModal'
-VerifiedPasswordModalContent = require './verifypasswordmodalcontent'
 
 module.exports = class VerifyPasswordModal extends ContentModal
 
-  constructor: (buttonTitle = 'Submit', options = {}, callback) ->
+  constructor: (buttonTitle = 'Submit', partial = '', callback) ->
 
-    partial  = options.partial || ''
     cssClass = 'content-modal'
     cssClass = 'content-modal with-partial'  if partial
 
+
     options =
-      title                       : options.title or 'Please verify your current password'
+      title                       : 'Please verify your current password'
       cssClass                    : cssClass
       overlay                     : yes
       overlayClick                : no
-      width                       : options.width or 605
-      buttons               :
-        Cancel              :
-          style             : 'GenericButton cancel'
-          title             : 'Cancel'
-          callback          : => @destroy()
-        Submit              :
-          title             : buttonTitle
-          style             : 'GenericButton'
-          type              : 'submit'
+      width                       : 605
       tabs                        :
         navigable                 : yes
         forms                     :
@@ -36,6 +26,21 @@ module.exports = class VerifyPasswordModal extends ContentModal
             callback              : =>
               callback @modalTabs.forms.verifyPasswordForm.inputs.password.getValue()
               @destroy()
+            buttons               :
+              Forgot              :
+                style             : 'GenericButton cancel'
+                title             : 'Forgot Password?'
+                callback          : =>
+                  account = whoami()
+                  account.fetchEmail (err, email) =>
+                    return @showError err  if err
+                    @doRecover email
+                    @destroy()
+              Submit              :
+                title             : buttonTitle
+                style             : 'GenericButton'
+                type              : 'submit'
+
             fields                :
               planDetails     :
                 type          : 'hidden'
@@ -48,7 +53,7 @@ module.exports = class VerifyPasswordModal extends ContentModal
               password            :
                 name              : 'password'
                 cssClass          : 'line-with'
-                label             : '<strong>Please enter your password</strong> to continue'
+                label             : 'Current Password'
                 placeholder       : 'Enter your current password'
                 type              : 'password'
                 validate          :
@@ -56,29 +61,9 @@ module.exports = class VerifyPasswordModal extends ContentModal
                     required      : yes
                   messages        :
                     required      : 'Current Password required!'
-                nextElement   :
-                  planDetails :
-                    cssClass  : 'content'
-                    itemClass : kd.View
-                    partial   : '<a href="#">Forgot password?</a>'
-                    callback          : =>
-                      account = whoami()
-                      account.fetchEmail (err, email) =>
-                        return @showError err  if err
-                        @doRecover email
-                        @destroy()
-                  planDetailsss :
-                    cssClass  : 'contentssdf'
-                    itemClass : kd.View
-                    partial   : '<a href="#">Forgot password?</a>'
+
 
     super options
-
-  createBody: ->
-    @addSubView new VerifiedPasswordModalContent()
-
-
-
 
   doRecover: (email) ->
     $.ajax
