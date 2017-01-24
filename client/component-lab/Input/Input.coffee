@@ -9,7 +9,7 @@ styles = require './Input.stylus'
 module.exports = Input = (props) ->
 
   { className, size, disabled, error
-    type, auto, title, mask, name } = props
+    type, auto, title, mask, name, onChange } = props
 
   className = classNames [
     className

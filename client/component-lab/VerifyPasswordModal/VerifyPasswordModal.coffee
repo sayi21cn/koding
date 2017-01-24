@@ -4,6 +4,7 @@ Label = require 'lab/Text/Label'
 
 styles = require './VerifyPasswordModal.stylus'
 
+Input = require 'lab/Input/Input'
 Link = require 'app/components/common/link'
 
 module.exports = class VerifyPasswordModal extends React.Component
@@ -22,7 +23,7 @@ module.exports = class VerifyPasswordModal extends React.Component
     hasTransfer = false
 
     modalProps =
-      width: "medium"
+      width: "xlarge"
       height: "normal"
       showAlien: no
       isOpen: yes
@@ -35,6 +36,13 @@ module.exports = class VerifyPasswordModal extends React.Component
         <div className={styles.warningPrompt}>You will not be able to access this team unless you are invited again. This action <span>cannot</span> be undone.</div>
         <main className="mainContainer">
           <p><strong>{if hasTransfer then '1- ' else ''}Please enter your password</strong> to continue:</p>
+
+            <Input.Field
+              mask={[/\d/, /\d/]}
+              guide={off}
+              name='exp_month'
+              title='Expiration'
+              placeholder='Enter Password' />
           <input className="kdinput text" type="password" placeholder="Enter password" onChange={@update.bind(this)} />
           <Link onClick={onForgotPassword}>Forgot password?</Link>
           {hasTransfer and <TransferOwnership />}
