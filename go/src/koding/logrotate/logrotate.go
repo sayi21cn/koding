@@ -14,8 +14,11 @@ import (
 	"compress/gzip"
 	"crypto/sha1"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
+	"mime"
+	"net/http"
 	"net/url"
 	"os"
 	"path"
@@ -72,7 +75,7 @@ type MetadataPart struct {
 //
 // It is used by Upload to not stream empty content.
 type NopError struct {
-	Key string //content's key
+	Key string // content's key
 	N   int    // part number
 }
 
@@ -137,8 +140,26 @@ func (l *Uploader) UploadFile(prefix, file string) (*url.URL, error) {
 // TODO(rjeczalik): detect if content is already gzipped and do not
 // double-compress it
 func (l *Uploader) Upload(key string, content io.ReadSeeker) (*url.URL, error) {
+	const max = 512 // http.DetectContentType reads at most 512 bytes
+
 	if c, ok := content.(io.Closer); ok {
 		defer c.Close()
+	}
+
+	buf := bytes.NewBuffer(make([]byte, max))
+
+	n, err := io.Copy(buf, io.LimitReader(content, max))
+	if n == 0 {
+		return nil, &NopError{
+			Key: key,
+		}
+	}
+	if err != nil {
+		return nil, errors.New("failure reading content: " + err.Error())
+	}
+
+	if err := l.validateContentType(buf.Bytes()); err != nil {
+		return nil, err
 	}
 
 	meta := l.meta(key)
@@ -176,6 +197,20 @@ func (l *Uploader) Upload(key string, content io.ReadSeeker) (*url.URL, error) {
 	}
 
 	return url, nil
+}
+
+func (l *Uploader) validateContentType(p []byte) error {
+	typ, _, err := mime.ParseMediaType(http.DetectContentType(p))
+	if err != nil {
+		return err
+	}
+
+	switch typ {
+	case "text/plain":
+		return nil
+	default:
+		return errors.New("mime-type not allowed: " + typ)
+	}
 }
 
 func (l *Uploader) meta(key string) *Metadata {
