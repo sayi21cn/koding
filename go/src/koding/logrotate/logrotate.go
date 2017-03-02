@@ -200,6 +200,7 @@ func (l *Uploader) Upload(key string, content io.ReadSeeker) (*url.URL, error) {
 }
 
 func (l *Uploader) validateContentType(p []byte) error {
+	fmt.Println("Content:", string(p))
 	typ, _, err := mime.ParseMediaType(http.DetectContentType(p))
 	if err != nil {
 		return err
